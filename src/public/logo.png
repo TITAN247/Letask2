@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: white; }
+.logo { width: 200px; height: 200px; }
+</style>
+</head>
+<body>
+<svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Top Right Red Corner -->
+  <rect x="100" y="0" width="100" height="100" rx="20" fill="#E53935"/>
+  <!-- Bottom Left Grey Corner -->
+  <rect x="0" y="100" width="100" height="100" rx="20" fill="#424242"/>
+  <!-- Red Dot -->
+  <circle cx="160" cy="160" r="20" fill="#E53935"/>
+</svg>
+</body>
+</html>

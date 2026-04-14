@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #0EA5E9;
+  /* Sky blue-ish */
+  --color-secondary: #F97316;
+  /* Orange */
+  --color-accent: #EF4444;
+  /* Red */
+  --color-dark: #1E293B;
+  --color-light-blue: #E0F2FE;
+  --color-onboarding-bg: #E2F5FF;
+
+  --font-sans: var(--font-outfit);
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #002B4D;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), sans-serif;
+}
+
+/* Infinite scroll animation for landing page logos */
+@keyframes scroll-infinite {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-infinite {
+  animation: scroll-infinite 25s linear infinite;
+  will-change: transform;
+  animation-fill-mode: both;
+}
+
+.animate-scroll-infinite:hover {
+  animation-play-state: paused;
+}
+
+/* Floating animations for hero background */
+@keyframes float-slow {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-10px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px);
+  }
+}
+
+@keyframes float-medium {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  33% {
+    transform: translateY(-15px) translateX(-15px);
+  }
+  66% {
+    transform: translateY(-25px) translateX(10px);
+  }
+}
+
+@keyframes float-fast {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-20px) translateX(15px);
+  }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
+}
+
+.animate-float-medium {
+  animation: float-medium 6s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: float-fast 4s ease-in-out infinite;
+}
+
+/* Twinkle animation for star particles */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* HERO BLUE BACKGROUND – mimics the detailed grid + glow from the design */
+.hero-bg {
+  position: relative;
+  background:
+    /* soft top-left glow */
+    radial-gradient(circle at 12% 6%, rgba(255, 255, 255, 0.4) 0, transparent 55%),
+    /* soft top-right glow */
+    radial-gradient(circle at 88% 6%, rgba(255, 255, 255, 0.35) 0, transparent 60%),
+    /* base blue gradient */
+    linear-gradient(180deg, #0a8ae9 0%, #1995f2 32%, #5fcbff 100%);
+  overflow: hidden;
+}
+
+.hero-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.2;
+  /* fine grid lines */
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.5) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
+  background-size: 70px 70px;
+  pointer-events: none;
+}
+
+.hero-bg::after {
+  content: "";
+  position: absolute;
+  inset: 40px 32px auto 32px;
+  height: 1px;
+  border-radius: 999px;
+  opacity: 0.3;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.9), transparent 60%);
+  pointer-events: none;
+}
