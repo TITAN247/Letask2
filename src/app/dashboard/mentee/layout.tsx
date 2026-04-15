@@ -5,9 +5,9 @@ export default function MenteeDashboardLayout({ children }: { children: React.Re
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans text-slate-900">
       <Sidebar />
-      <div className="flex-1 flex flex-col relative w-full overflow-hidden">
+      <div className="flex-1 flex flex-col relative w-full overflow-hidden lg:ml-0">
         <TopHeader />
-        <main className="flex-1 p-8 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           {children}
         </main>
       </div>

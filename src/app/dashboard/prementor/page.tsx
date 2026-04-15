@@ -205,42 +205,42 @@ export default async function PreMentorDashboard() {
                         </p>
                     </div>
 
-                    <div className="flex items-center gap-6 bg-white py-3 px-6 rounded-2xl shadow-sm border border-slate-100">
-                        <div className="flex items-center gap-3 border-r border-slate-100 pr-6">
-                            <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
-                                <Star className="w-6 h-6 text-amber-500 fill-amber-500" />
+                    <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-4 sm:gap-6 bg-white py-3 px-4 sm:px-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div className="flex items-center gap-3 sm:border-r sm:border-slate-100 sm:pr-6">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+                                <Star className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500 fill-amber-500" />
                             </div>
                             <div>
-                                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Rating</div>
-                                <div className="text-xl font-extrabold text-slate-800 leading-none">
-                                    {rating ? <>{rating.toFixed(1)}<span className="text-sm text-slate-400">/5</span></> : <span className="text-sm text-slate-400">No ratings yet</span>}
+                                <div className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Rating</div>
+                                <div className="text-lg sm:text-xl font-extrabold text-slate-800 leading-none">
+                                    {rating ? <>{rating.toFixed(1)}<span className="text-xs sm:text-sm text-slate-400">/5</span></> : <span className="text-xs sm:text-sm text-slate-400">No ratings</span>}
                                 </div>
                             </div>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center">
-                                <Calendar className="w-6 h-6 text-indigo-500" />
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-indigo-500" />
                             </div>
                             <div>
-                                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Sessions</div>
-                                <div className="text-xl font-extrabold text-slate-800 leading-none">{totalCompleted}<span className="text-sm text-slate-400"> done</span></div>
+                                <div className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Sessions</div>
+                                <div className="text-lg sm:text-xl font-extrabold text-slate-800 leading-none">{totalCompleted}<span className="text-xs sm:text-sm text-slate-400"> done</span></div>
                             </div>
                         </div>
                         
                         {/* XP/Level Badge */}
-                        <div className="flex items-center gap-3 pl-6 border-l border-slate-100">
-                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#84CC16] to-[#65A30D] flex items-center justify-center text-white font-bold text-lg">
+                        <div className="flex items-center gap-3 sm:pl-6 sm:border-l sm:border-slate-100 w-full sm:w-auto">
+                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-[#84CC16] to-[#65A30D] flex items-center justify-center text-white font-bold text-base sm:text-lg flex-shrink-0">
                                 {level}
                             </div>
-                            <div className="w-32">
-                                <div className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Level {level}</div>
+                            <div className="flex-1 sm:w-32">
+                                <div className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider mb-0.5">Level {level}</div>
                                 <div className="w-full bg-slate-200 rounded-full h-2 mb-1">
                                     <div 
                                         className="bg-gradient-to-r from-[#84CC16] to-[#65A30D] h-2 rounded-full transition-all"
                                         style={{ width: `${xpProgress}%` }}
                                     />
                                 </div>
-                                <div className="text-xs text-slate-500">{xp}/{xpForNextLevel} XP</div>
+                                <div className="text-[10px] sm:text-xs text-slate-500">{xp}/{xpForNextLevel} XP</div>
                             </div>
                         </div>
                     </div>

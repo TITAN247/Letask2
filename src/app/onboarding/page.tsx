@@ -223,13 +223,13 @@ export default function MenteeOnboardingRedesign() {
     return (
         <div className="min-h-screen bg-white flex flex-col font-sans">
             {/* Top Navigation */}
-            <header className="px-8 py-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-50">
+            <header className="px-4 sm:px-8 py-4 sm:py-6 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-white z-50">
                 <div className="flex items-center gap-2">
-                    <img src="/logo.jpeg" alt="LetAsk" className="h-10 w-auto object-contain" />
+                    <img src="/logo.jpeg" alt="LetAsk" className="h-8 sm:h-10 w-auto object-contain" />
                 </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-sm text-slate-500 font-medium">Have an account?</span>
-                    <button onClick={() => router.push("/login/mentee")} className="text-sm font-bold text-indigo-600 hover:text-indigo-700">Log in</button>
+                <div className="flex items-center gap-2 sm:gap-4">
+                    <span className="text-xs sm:text-sm text-slate-500 font-medium hidden sm:block">Have an account?</span>
+                    <button onClick={() => router.push("/login/mentee")} className="text-xs sm:text-sm font-bold text-indigo-600 hover:text-indigo-700">Log in</button>
                 </div>
             </header>
 
@@ -243,7 +243,7 @@ export default function MenteeOnboardingRedesign() {
 
             <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
                 {/* Left Side: Form Steps */}
-                <div className="flex-1 overflow-y-auto px-8 py-16 md:px-24 flex flex-col items-center">
+                <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-8 sm:py-16 md:px-24 flex flex-col items-center">
                     <div className="w-full max-w-md">
                         {/* Step 1: Profile & Country */}
                         {step === 1 && (

@@ -35,35 +35,35 @@ export default function TopHeader() {
   const firstName = userName ? userName.split(" ")[0] : "there";
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-8 py-5 bg-white/80 backdrop-blur-md border-b border-slate-100">
-      <div className="flex flex-col">
-        <h1 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 uppercase tracking-tight">
+    <header className="sticky top-0 z-30 flex flex-col sm:flex-row sm:items-center justify-between px-4 sm:px-6 lg:px-8 py-4 sm:py-5 bg-white/80 backdrop-blur-md border-b border-slate-100 gap-4">
+      <div className="flex flex-col pl-12 lg:pl-0">
+        <h1 className="text-lg sm:text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-700 uppercase tracking-tight">
           {greeting}, {firstName} 👋
         </h1>
-        <p className="text-sm text-slate-500 font-medium mt-0.5 tracking-tight italic opacity-80">Let&apos;s continue your learning journey.</p>
+        <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5 tracking-tight italic opacity-80 hidden sm:block">Let&apos;s continue your learning journey.</p>
       </div>
 
-      <div className="flex items-center gap-6">
-        {/* Search Bar */}
+      <div className="flex items-center gap-3 sm:gap-6">
+        {/* Search Bar - Hidden on mobile */}
         <div className="relative group hidden md:block">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
             <Search className="w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
           </div>
           <input
             type="text"
-            className="w-80 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-full focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 block pl-10 p-2.5 transition-all outline-none"
-            placeholder="Search mentors, skills, or problems..."
+            className="w-64 lg:w-80 bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-full focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 block pl-10 p-2 transition-all outline-none"
+            placeholder="Search mentors, skills..."
           />
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
-          <button className="relative p-2.5 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors border border-slate-200/60">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+        <div className="flex items-center gap-2 sm:gap-4 ml-auto">
+          <button className="relative p-2 sm:p-2.5 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-600 transition-colors border border-slate-200/60">
+            <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
           </button>
           
-          <Link href="/mentors" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-semibold shadow-md shadow-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 transition-all duration-200 block text-center">
+          <Link href="/mentors" className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs sm:text-sm font-semibold shadow-md shadow-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/30 hover:-translate-y-0.5 transition-all duration-200 block text-center whitespace-nowrap">
             Book Mentor
           </Link>
         </div>

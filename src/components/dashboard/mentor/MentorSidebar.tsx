@@ -14,7 +14,9 @@ import {
   UserCircle,
   Video,
   DollarSign,
-  Search
+  Search,
+  Menu,
+  X
 } from "lucide-react";
 
 interface MentorSidebarProps {
@@ -26,6 +28,7 @@ export default function MentorSidebar({ role }: MentorSidebarProps) {
   const { data: session } = useSession();
   const [userName, setUserName] = useState("");
   const [profilePic, setProfilePic] = useState("");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (session?.user?.name) { setUserName(session.user.name); }
@@ -83,7 +86,29 @@ export default function MentorSidebar({ role }: MentorSidebarProps) {
   ];
 
   return (
-    <aside className="w-64 h-screen sticky top-0 bg-white border-r border-slate-100 flex flex-col justify-between p-4 hide-scrollbar overflow-y-auto">
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(true)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2.5 bg-white rounded-xl shadow-lg border border-slate-100"
+        aria-label="Open menu"
+      >
+        <Menu className="w-5 h-5 text-slate-700" />
+      </button>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <aside className={`w-64 h-screen bg-white border-r border-slate-100 flex flex-col justify-between p-4 hide-scrollbar overflow-y-auto z-50
+        lg:sticky lg:top-0 lg:left-0 lg:translate-x-0
+        fixed top-0 left-0 transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
       <div>
         {/* Logo / Brand */}
         <div className="flex items-center gap-2 mb-8 px-2">
@@ -166,6 +191,16 @@ export default function MentorSidebar({ role }: MentorSidebarProps) {
           </div>
         </div>
       </div>
+
+      {/* Mobile Close Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(false)}
+        className="lg:hidden absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-full"
+        aria-label="Close menu"
+      >
+        <X className="w-5 h-5 text-slate-500" />
+      </button>
     </aside>
+    </>
   );
 }

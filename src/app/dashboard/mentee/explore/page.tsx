@@ -95,7 +95,7 @@ export default async function ExploreMentorsPage({ searchParams }: ExplorePagePr
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 pb-20 animate-in fade-in duration-700">
       {/* Hero Header */}
-      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-10 text-white shadow-2xl shadow-indigo-500/20">
+      <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2.5rem] bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 p-6 sm:p-10 text-white shadow-2xl shadow-indigo-500/20">
         <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-pink-500/20 rounded-full blur-2xl -ml-20 -mb-20"></div>
         <div className="absolute top-1/2 left-1/2 w-32 h-32 bg-purple-500/30 rounded-full blur-xl"></div>

@@ -187,47 +187,47 @@ export default async function ProMentorDashboard() {
                 </div>
 
                 {/* Metrics Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                    <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full transition-all group-hover:scale-110"></div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-10">
+                    <div className="bg-white rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
+                        <div className="absolute top-0 right-0 w-20 h-20 sm:w-24 sm:h-24 bg-emerald-50 rounded-bl-full transition-all group-hover:scale-110"></div>
                         <div>
-                            <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
-                                <TrendingUp className="w-4 h-4 text-emerald-500" /> Gross Revenue
+                            <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
+                                <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" /> Gross Revenue
                             </div>
-                            <div className="text-4xl font-black text-slate-900" suppressHydrationWarning>${totalEarnings.toLocaleString('en-US')}</div>
+                            <div className="text-2xl sm:text-4xl font-black text-slate-900" suppressHydrationWarning>${totalEarnings.toLocaleString('en-US')}</div>
                         </div>
-                        <div className="mt-6 text-sm font-medium text-slate-400">
+                        <div className="mt-4 sm:mt-6 text-xs sm:text-sm font-medium text-slate-400">
                             {pastSessions.length} completed session{pastSessions.length !== 1 ? 's' : ''}
                             {flatRate > 0 && <span> · ${flatRate}/session</span>}
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
-                        <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-slate-100 p-6 flex-1 min-w-[200px]">
-                           <div className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
-                              <Calendar className="w-4 h-4 text-indigo-400" /> Upcoming Sessions
+                    <div className="bg-white rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 flex flex-col justify-between overflow-hidden relative group">
+                        <div>
+                           <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
+                              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-400" /> Upcoming Sessions
                            </div>
-                           <div className="text-4xl font-black text-slate-900">{paidSessions.length} <span className="text-xl text-slate-300">paid</span></div>
+                           <div className="text-2xl sm:text-4xl font-black text-slate-900">{paidSessions.length} <span className="text-base sm:text-xl text-slate-300">paid</span></div>
                            {unpaidSessions.length > 0 && (
-                              <div className="text-sm text-amber-600 font-medium mt-1">
+                              <div className="text-xs sm:text-sm text-amber-600 font-medium mt-1">
                                  {unpaidSessions.length} awaiting payment
                               </div>
                            )}
                         </div>
-                        <div className="mt-6 text-sm font-medium text-slate-400">
+                        <div className="mt-4 sm:mt-6 text-xs sm:text-sm font-medium text-slate-400">
                            {pendingRequests.length} pending review
                         </div>
                     </div>
 
-                    <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[2rem] p-8 shadow-xl text-white flex flex-col justify-between overflow-hidden relative group">
-                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none transition-all group-hover:bg-white/20"></div>
+                    <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-8 shadow-xl text-white flex flex-col justify-between overflow-hidden relative group sm:col-span-2 lg:col-span-1">
+                        <div className="absolute -top-10 -right-10 w-32 h-32 sm:w-40 sm:h-40 bg-white/10 rounded-full blur-2xl pointer-events-none transition-all group-hover:bg-white/20"></div>
                         <div>
-                            <div className="text-xs font-bold uppercase tracking-widest text-indigo-200 mb-2 flex items-center gap-2">
-                                <DollarSign className="w-4 h-4 text-indigo-300" /> Escrow Balance
+                            <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-200 mb-2 flex items-center gap-2">
+                                <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-300" /> Escrow Balance
                             </div>
-                            <div className="text-4xl font-black text-white" suppressHydrationWarning>${pendingEarnings.toLocaleString('en-US')}</div>
+                            <div className="text-2xl sm:text-4xl font-black text-white" suppressHydrationWarning>${pendingEarnings.toLocaleString('en-US')}</div>
                         </div>
-                        <div className="mt-6 text-sm text-indigo-200 font-medium">
+                        <div className="mt-4 sm:mt-6 text-xs sm:text-sm text-indigo-200 font-medium">
                             {flatRate > 0 ? `${upcomingSessions.length} confirmed · $${flatRate} each` : 'Set your pricing in Profile settings'}
                         </div>
                     </div>

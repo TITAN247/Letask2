@@ -5,13 +5,42 @@ import Link from "next/link";
 import { useState } from "react";
 import { Sparkles, MessageCircle, Users, Calendar, Star, Shield, Zap } from "lucide-react";
 import Logo from "@/components/Logo";
+import Script from "next/script";
 
 export default function Home() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [loginStep, setLoginStep] = useState<'main' | 'mentor'>('main');
 
   return (
-    <main className="min-h-screen bg-white overflow-x-hidden font-sans">
+    <>
+      {/* JSON-LD Structured Data for Rich Snippets */}
+      <Script
+        id="json-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "LetAsk",
+            url: "https://letask2.onrender.com",
+            description: "Connect with experienced mentors for career guidance and personalized mentorship.",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: "https://letask2.onrender.com/dashboard/mentee/explore?q={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "LetAsk",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://letask2.onrender.com/logo.jpeg",
+              },
+            },
+          }),
+        }}
+      />
+      <main className="min-h-screen bg-white overflow-x-hidden font-sans">
       {/* 
         HERO SECTION 
         Background: Gradient blue with subtle grid/texture 
@@ -48,35 +77,35 @@ export default function Home() {
         </div>
         
         {/* Navbar */}
-        <nav className="relative z-50 flex items-center justify-between px-4 sm:px-6 md:px-10 py-4 sm:py-5 max-w-7xl mx-auto">
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 cursor-pointer">
-            <Logo size={40} textColor="text-white" showText={true} />
+        <nav className="relative z-50 flex items-center justify-between px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 max-w-7xl mx-auto">
+          <Link href="/" className="flex items-center gap-2 cursor-pointer">
+            <Logo size={32} textColor="text-white" showText={true} />
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             <button
-              className="hidden md:block px-8 py-2.5 text-white bg-[#EF4444] rounded-full font-bold text-sm shadow-lg hover:bg-[#DC2626] hover:scale-105 active:scale-95 transition-all duration-300"
+              className="hidden sm:block px-6 py-2 text-white bg-[#EF4444] rounded-full font-bold text-xs sm:text-sm shadow-lg hover:bg-[#DC2626] hover:scale-105 active:scale-95 transition-all duration-300"
               onClick={() => setIsLoginOpen(true)}
             >
               Login
             </button>
             <button 
               onClick={() => setIsLoginOpen(true)}
-              className="px-8 py-2.5 text-[#0EA5E9] bg-white rounded-full font-bold text-sm shadow-lg hover:shadow-xl hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all duration-300">
+              className="px-4 sm:px-8 py-2 sm:py-2.5 text-[#0EA5E9] bg-white rounded-full font-bold text-xs sm:text-sm shadow-lg hover:shadow-xl hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all duration-300">
               Get Started
             </button>
           </div>
         </nav>
 
         {/* Hero Content */}
-        <div className="relative z-10 px-6 max-w-5xl mx-auto text-center mt-12 md:mt-16">
+        <div className="relative z-10 px-4 sm:px-6 max-w-5xl mx-auto text-center mt-8 sm:mt-12 md:mt-16">
           {/* Glow effect behind headline */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gradient-to-r from-[#0EA5E9]/20 via-[#FCD34D]/20 to-[#0EA5E9]/20 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] sm:w-[600px] h-[200px] sm:h-[300px] bg-gradient-to-r from-[#0EA5E9]/20 via-[#FCD34D]/20 to-[#0EA5E9]/20 blur-[60px] sm:blur-[100px] rounded-full pointer-events-none"></div>
           
-          <h1 className="relative text-4xl md:text-5xl lg:text-[64px] font-extrabold text-white mb-6 leading-[1.15] drop-shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
-            Stuck on a problem? Confused about<br className="hidden md:block" />
+          <h1 className="relative text-2xl sm:text-4xl md:text-5xl lg:text-[64px] font-extrabold text-white mb-4 sm:mb-6 leading-[1.15] drop-shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
+            Stuck on a problem?<br className="sm:hidden" /> Confused about<br className="hidden md:block" />
             your next step? <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-200">Stop Searching.</span>
           </h1>
-          <p className="text-sky-50 text-base md:text-lg max-w-3xl mx-auto mb-16 font-medium leading-relaxed drop-shadow-md">
+          <p className="text-sky-50 text-sm sm:text-base md:text-lg max-w-3xl mx-auto mb-8 sm:mb-16 font-medium leading-relaxed drop-shadow-md px-2">
             Connect with mentors who've already been there. Get guidance that actually helps across
             careers, learning, business, and life decisions.
           </p>
@@ -90,64 +119,65 @@ export default function Home() {
           </div>
 
           {/* Character & Cards Container */}
-          <div className="relative w-full max-w-5xl mx-auto h-[450px] md:h-[550px]">
+          <div className="relative w-full max-w-5xl mx-auto h-[350px] sm:h-[400px] md:h-[550px]">
 
             {/* Main Character */}
-            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-20 w-80 md:w-[520px] transition-all duration-500 hover:scale-[1.02]">
+            <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-20 w-48 sm:w-64 md:w-[520px] transition-all duration-500 hover:scale-[1.02]">
               <Image
                 src="/assets/hero-smiling.png"
-                alt="Smiling Mentor"
+                alt="Friendly 3D cartoon mentor character welcoming users to LetAsk mentorship platform"
                 width={500}
                 height={500}
                 className="w-full h-auto drop-shadow-2xl"
                 priority
+                loading="eager"
               />
             </div>
 
-            {/* Floating Card: Mentee (Left) */}
-            <Link href="/mentee" className="absolute top-10 left-2 md:left-4 bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-56 md:w-72 text-center transform -rotate-3 z-10 border border-white/50 hover:rotate-0 transition-all duration-500 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] cursor-pointer block">
-              <h3 className="text-[#0EA5E9] font-black text-xl mb-2">For Mentee</h3>
-              <p className="text-xs text-slate-500 leading-snug mb-4 font-medium">
+            {/* Floating Card: Mentee (Left) - Hidden on small mobile */}
+            <Link href="/mentee" className="absolute top-10 left-2 sm:left-4 bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl px-3 sm:px-6 py-3 sm:py-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-40 sm:w-56 md:w-72 text-center transform -rotate-3 z-10 border border-white/50 hover:rotate-0 transition-all duration-500 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] cursor-pointer block hidden xs:block">
+              <h3 className="text-[#0EA5E9] font-black text-sm sm:text-xl mb-1 sm:mb-2">For Mentee</h3>
+              <p className="text-[10px] sm:text-xs text-slate-500 leading-snug mb-2 sm:mb-4 font-medium hidden sm:block">
                 Get mentorship from experienced professionals. Book sessions, chat, and grow your career.
               </p>
-              <div className="flex items-center justify-center gap-2 text-[#0EA5E9] text-xs font-bold">
-                Learn More <span className="text-lg">→</span>
+              <div className="flex items-center justify-center gap-1 sm:gap-2 text-[#0EA5E9] text-[10px] sm:text-xs font-bold">
+                Learn More <span className="text-sm sm:text-lg">→</span>
               </div>
 
-              {/* Floating Badges */}
-              <div className="absolute -bottom-10 -right-20 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-700 whitespace-nowrap animate-bounce-slow">
+              {/* Floating Badges - Hidden on mobile */}
+              <div className="absolute -bottom-10 -right-20 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-700 whitespace-nowrap animate-bounce-slow hidden md:flex">
                 <span className="text-[#EF4444] bg-red-100 rounded-full w-5 h-5 flex items-center justify-center text-[10px]">!</span>
                 Career?
               </div>
-              <div className="absolute -bottom-28 -right-8 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-700 whitespace-nowrap animate-bounce-slower">
+              <div className="absolute -bottom-28 -right-8 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-700 whitespace-nowrap animate-bounce-slower hidden md:flex">
                 <span className="text-[#EF4444] bg-red-100 rounded-full w-5 h-5 flex items-center justify-center text-[10px]">!</span>
                 Switching fields?
               </div>
             </Link>
 
-            {/* Floating Card: Pre-mentor (Right Top) */}
-            <Link href="/prementor" className="absolute top-8 right-2 md:right-4 bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-56 md:w-72 text-center transform rotate-3 z-10 border border-white/50 hover:rotate-0 transition-all duration-500 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] cursor-pointer block">
-              <h3 className="text-[#84CC16] font-black text-xl mb-2">For Pre-mentor</h3>
-              <p className="text-xs text-slate-500 leading-snug mb-4 font-medium">
+            {/* Floating Card: Pre-mentor (Right Top) - Hidden on small mobile */}
+            <Link href="/prementor" className="absolute top-8 right-2 sm:right-4 bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl px-3 sm:px-6 py-3 sm:py-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-40 sm:w-56 md:w-72 text-center transform rotate-3 z-10 border border-white/50 hover:rotate-0 transition-all duration-500 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] cursor-pointer block hidden xs:block">
+              <h3 className="text-[#84CC16] font-black text-sm sm:text-xl mb-1 sm:mb-2">For Pre-mentor</h3>
+              <p className="text-[10px] sm:text-xs text-slate-500 leading-snug mb-2 sm:mb-4 font-medium hidden sm:block">
                 Early in your career? Start mentoring others and build your profile while helping others grow.
               </p>
-              <div className="flex items-center justify-center gap-2 text-[#84CC16] text-xs font-bold">
-                Learn More <span className="text-lg">→</span>
+              <div className="flex items-center justify-center gap-1 sm:gap-2 text-[#84CC16] text-[10px] sm:text-xs font-bold">
+                Learn More <span className="text-sm sm:text-lg">→</span>
               </div>
             </Link>
 
-            {/* Floating Card: Pro-mentor (Right Bottom) */}
-            <Link href="/promentor" className="absolute bottom-12 right-0 md:-right-6 bg-white/95 backdrop-blur-sm rounded-3xl px-6 py-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-56 md:w-72 text-center transform md:rotate-2 z-30 border border-white/50 hover:rotate-0 transition-all duration-500 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] cursor-pointer block">
-              <h3 className="text-[#8B5CF6] font-black text-xl mb-2">For Pro-mentor</h3>
-              <p className="text-xs text-slate-500 leading-snug mb-4 font-medium">
+            {/* Floating Card: Pro-mentor (Right Bottom) - Hidden on small mobile */}
+            <Link href="/promentor" className="absolute bottom-12 right-0 sm:-right-6 bg-white/95 backdrop-blur-sm rounded-2xl sm:rounded-3xl px-3 sm:px-6 py-3 sm:py-5 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-40 sm:w-56 md:w-72 text-center transform sm:rotate-2 z-30 border border-white/50 hover:rotate-0 transition-all duration-500 hover:scale-105 hover:shadow-[0_25px_60px_rgba(0,0,0,0.15)] cursor-pointer block hidden xs:block">
+              <h3 className="text-[#8B5CF6] font-black text-sm sm:text-xl mb-1 sm:mb-2">For Pro-mentor</h3>
+              <p className="text-[10px] sm:text-xs text-slate-500 leading-snug mb-2 sm:mb-4 font-medium hidden sm:block">
                 Experienced professional? Turn your expertise into income with paid mentorship sessions.
               </p>
-              <div className="flex items-center justify-center gap-2 text-[#8B5CF6] text-xs font-bold">
-                Learn More <span className="text-lg">→</span>
+              <div className="flex items-center justify-center gap-1 sm:gap-2 text-[#8B5CF6] text-[10px] sm:text-xs font-bold">
+                Learn More <span className="text-sm sm:text-lg">→</span>
               </div>
 
-              {/* Floating Badge */}
-              <div className="absolute -top-12 -left-12 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-700 whitespace-nowrap animate-pulse-slow">
+              {/* Floating Badge - Hidden on mobile */}
+              <div className="absolute -top-12 -left-12 bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 text-xs font-bold text-slate-700 whitespace-nowrap animate-pulse-slow hidden md:flex">
                 <span className="text-[#22C55E] bg-green-100 rounded-full w-5 h-5 flex items-center justify-center text-[10px]">✓</span>
                 Coding?
               </div>
@@ -161,7 +191,7 @@ export default function Home() {
       {/* LOGIN MODAL */}
       {isLoginOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={(e) => {
             if (e.currentTarget === e.target) {
               setIsLoginOpen(false);
@@ -169,18 +199,18 @@ export default function Home() {
             }
           }}
         >
-          <div className="relative w-full max-w-[1100px] mx-4 overflow-hidden rounded-[40px] bg-gradient-to-br from-[#E0F7FF] via-[#F0Faff] to-[#FFFFFF] shadow-2xl border-4 border-white">
+          <div className="relative w-full max-w-[1100px] max-h-[90vh] overflow-y-auto rounded-[20px] sm:rounded-[40px] bg-gradient-to-br from-[#E0F7FF] via-[#F0Faff] to-[#FFFFFF] shadow-2xl border-2 sm:border-4 border-white">
 
             {/* Close Button */}
             <button
               aria-label="Close"
-              className="absolute top-6 right-8 z-10 text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute top-3 sm:top-6 right-3 sm:right-8 z-10 text-gray-400 hover:text-gray-600 transition-colors"
               onClick={() => {
                 setIsLoginOpen(false);
                 setLoginStep('main');
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="sm:w-8 sm:h-8">
                 <circle cx="12" cy="12" r="10"></circle>
                 <line x1="15" y1="9" x2="9" y2="15"></line>
                 <line x1="9" y1="9" x2="15" y2="15"></line>
@@ -188,30 +218,30 @@ export default function Home() {
             </button>
 
             {/* Content */}
-            <div className="flex flex-col items-center pt-8 pb-16 px-8">
+            <div className="flex flex-col items-center pt-6 sm:pt-8 pb-8 sm:pb-16 px-4 sm:px-8">
 
               {/* Header */}
-              <h2 className="text-5xl font-bold text-[#0EA5E9] mb-12 drop-shadow-sm tracking-tight font-sans">
+              <h2 className="text-3xl sm:text-5xl font-bold text-[#0EA5E9] mb-6 sm:mb-12 drop-shadow-sm tracking-tight font-sans">
                 {loginStep === 'main' ? 'Log in' : 'Select Mentor Type'}
               </h2>
 
               {loginStep === 'main' ? (
                 /* Step 1: Main Options - Mentee | Mentor */
-                <div className="flex flex-col md:flex-row items-end justify-center gap-8 lg:gap-16 w-full">
+                <div className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-6 sm:gap-8 lg:gap-16 w-full">
 
                   {/* Mentee Option */}
                   <div className="flex flex-col items-center group cursor-pointer">
                     <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-2">
                       <Image
                         src="/assets/login-mentee-new.png"
-                        alt="Login as Mentee"
-                        width={320}
-                        height={360}
-                        className="object-contain h-[380px] w-auto drop-shadow-xl"
+                        alt="Mentee login illustration - young student character ready to learn with mentor"
+                        width={280}
+                        height={320}
+                        className="object-contain h-[200px] sm:h-[280px] md:h-[380px] w-auto drop-shadow-xl"
                       />
                     </div>
                     <Link href="/login/mentee">
-                      <button className="relative -mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-lg py-3 px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-64 text-center">
+                      <button className="relative -mt-2 sm:-mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-sm sm:text-base md:text-lg py-2 sm:py-3 px-6 sm:px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-48 sm:w-56 md:w-64 text-center">
                         Login as Mentee
                       </button>
                     </Link>
@@ -223,15 +253,15 @@ export default function Home() {
                       <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-2">
                         <Image
                           src="/assets/login-promentor-new.png"
-                          alt="Login as Mentor"
-                          width={320}
-                          height={360}
-                          className="object-contain h-[380px] w-auto drop-shadow-xl"
+                          alt="Professional mentor login illustration - experienced mentor character with graduation cap"
+                          width={280}
+                          height={320}
+                          className="object-contain h-[200px] sm:h-[280px] md:h-[380px] w-auto drop-shadow-xl"
                         />
                       </div>
                       <button 
                         onClick={() => setIsLoginOpen(false)}
-                        className="relative -mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-lg py-3 px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-64 text-center"
+                        className="relative -mt-2 sm:-mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-sm sm:text-base md:text-lg py-2 sm:py-3 px-6 sm:px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-48 sm:w-56 md:w-64 text-center"
                       >
                         Login as Mentor
                       </button>
@@ -241,21 +271,21 @@ export default function Home() {
                 </div>
               ) : (
                 /* Step 2: Mentor Options - PreMentor | ProMentor */
-                <div className="flex flex-col md:flex-row items-end justify-center gap-8 lg:gap-16 w-full">
+                <div className="flex flex-col sm:flex-row items-center sm:items-end justify-center gap-6 sm:gap-8 lg:gap-16 w-full">
 
                   {/* PreMentor Option */}
                   <div className="flex flex-col items-center group cursor-pointer">
                     <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-2">
                       <Image
                         src="/assets/login-prementor-new.png"
-                        alt="Login as PreMentor"
-                        width={320}
-                        height={360}
-                        className="object-contain h-[400px] w-auto drop-shadow-xl"
+                        alt="Pre-mentor login illustration - aspiring mentor character sharing knowledge"
+                        width={280}
+                        height={320}
+                        className="object-contain h-[200px] sm:h-[280px] md:h-[400px] w-auto drop-shadow-xl"
                       />
                     </div>
                     <Link href="/login/prementor">
-                      <button className="relative -mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-lg py-3 px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-64 text-center">
+                      <button className="relative -mt-2 sm:-mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-sm sm:text-base md:text-lg py-2 sm:py-3 px-6 sm:px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-48 sm:w-56 md:w-64 text-center">
                         Login as PreMentor
                       </button>
                     </Link>
@@ -266,14 +296,14 @@ export default function Home() {
                     <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-2">
                       <Image
                         src="/assets/login-promentor-new.png"
-                        alt="Login as ProMentor"
-                        width={320}
-                        height={360}
-                        className="object-contain h-[400px] w-auto drop-shadow-xl"
+                        alt="Pro-mentor login illustration - expert mentor character with professional badge"
+                        width={280}
+                        height={320}
+                        className="object-contain h-[200px] sm:h-[280px] md:h-[400px] w-auto drop-shadow-xl"
                       />
                     </div>
                     <Link href="/login/promentor">
-                      <button className="relative -mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-lg py-3 px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-64 text-center">
+                      <button className="relative -mt-2 sm:-mt-4 z-20 bg-[#EBCB7F] hover:bg-[#E5C065] text-[#3F2E12] font-semibold text-sm sm:text-base md:text-lg py-2 sm:py-3 px-6 sm:px-10 rounded-lg shadow-md border-b-4 border-[#C7A860] active:border-b-0 active:translate-y-1 transition-all w-48 sm:w-56 md:w-64 text-center">
                         Login as ProMentor
                       </button>
                     </Link>
@@ -773,6 +803,7 @@ export default function Home() {
       </section>
 
     </main>
+    </>
   );
 }
 
