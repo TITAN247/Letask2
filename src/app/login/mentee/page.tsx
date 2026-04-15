@@ -157,17 +157,15 @@ export default function MenteeLoginPage() {
                         </h1>
                     </div>
 
-                    <div className="relative w-[360px] md:w-[500px] lg:w-[650px] -mb-10 lg:-mb-20 flex justify-center">
+                    <div className="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]">
                         <Image
-                            src="/assests/login-mentee-new.png"
+                            src="/assets/login-mentee-new.png"
                             alt="Mentee learning illustration"
                             fill
-                            className="object-contain p-4"
+                            className="object-contain"
                             priority
+                            sizes="(max-width: 768px) 300px, (max-width: 1024px) 400px, 500px"
                         />
-                        {/* White-Blue Line/Glow Effect */}
-                        <div className="absolute bottom-0 w-[120%] h-24 bg-gradient-to-t from-[#E0F7FF] via-[#E0F7FF]/80 to-transparent z-20 blur-xl"></div>
-                        <div className="absolute bottom-10 w-full h-1 bg-gradient-to-r from-transparent via-sky-300 to-transparent opacity-50 blur-sm z-0"></div>
                     </div>
                 </div>
 

@@ -13,7 +13,8 @@ import {
   LogOut,
   UserCircle,
   Video,
-  DollarSign
+  DollarSign,
+  Search
 } from "lucide-react";
 
 interface MentorSidebarProps {
@@ -65,6 +66,11 @@ export default function MentorSidebar({ role }: MentorSidebarProps) {
     { label: "Sessions", href: `${basePath}/history`, icon: Calendar },
     { label: "My Profile", href: `${basePath}/profile`, icon: UserCircle },
   ];
+
+  // Prementor can explore and book promentors
+  if (role === 'prementor') {
+    NAV_ITEMS.splice(1, 0, { label: "Explore", href: `${basePath}/explore`, icon: Search });
+  }
 
   if (role === 'promentor') {
     NAV_ITEMS.splice(3, 0, { label: "Earnings", href: `${basePath}/earnings`, icon: DollarSign });

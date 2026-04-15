@@ -222,11 +222,11 @@ export default function Home() {
                     <div className="flex flex-col items-center group cursor-pointer">
                       <div className="relative z-10 transition-transform duration-300 group-hover:-translate-y-2">
                         <Image
-                          src="/assets/login-mentor-combo.png"
+                          src="/assets/login-promentor-new.png"
                           alt="Login as Mentor"
                           width={320}
                           height={360}
-                          className="object-contain h-[400px] w-auto drop-shadow-xl"
+                          className="object-contain h-[380px] w-auto drop-shadow-xl"
                         />
                       </div>
                       <button 

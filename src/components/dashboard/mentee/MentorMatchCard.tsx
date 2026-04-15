@@ -99,77 +99,101 @@ export default function MentorMatchCard({ mentors = [], userInterests = [] }: { 
 
 
   return (
-    <div className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in zoom-in duration-500">
-      <div className="flex items-center justify-between mb-8">
+    <div className="bg-white rounded-[2rem] p-6 md:p-8 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] animate-in fade-in zoom-in duration-500">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
+          <h2 className="text-xl md:text-2xl font-extrabold text-slate-900">
             AI Mentor Recommendations
           </h2>
-          <p className="text-sm font-medium text-slate-500 mt-2 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-indigo-500" />
+          <p className="text-xs md:text-sm font-medium text-slate-500 mt-1 flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-indigo-500" />
             Matched securely via TF-IDF + Cosine Similarity
           </p>
         </div>
-        <Link href="/mentors" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 hover:underline transition-all">
-          Explore Directory
+        <Link href="/mentors" className="text-xs md:text-sm font-bold text-indigo-600 hover:text-indigo-700 hover:underline transition-all whitespace-nowrap">
+          Explore Directory →
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {displayMentors.map(mentorApp => {
+      <div className="grid grid-cols-1 gap-4">
+        {displayMentors.map((mentorApp, index) => {
             const rawScore = mentorApp.mockTestScore || 85; 
-            const pseudoMatch = Math.min(rawScore + Math.floor(Math.random() * 10), 99);
+            // Use index-based pseudo-random for consistent SSR/client rendering
+            const pseudoMatch = Math.min(rawScore + (index * 3) % 15, 99);
 
             return (
           <div 
             key={mentorApp._id} 
-            className={`rounded-3xl border border-slate-100 p-6 bg-gradient-to-br from-slate-50 to-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group`}
+            className="rounded-2xl border border-slate-100 p-4 md:p-5 bg-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group"
           >
-            <div className="absolute top-5 right-5 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-slate-100 shadow-sm flex items-center gap-2 z-10 hover:scale-105 transition-transform">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-xs font-black text-emerald-700">{pseudoMatch}% Match</span>
-            </div>
-
-            <div className="flex items-start gap-5 relative z-10">
+            <div className="flex items-start gap-3 md:gap-4">
+              {/* Avatar */}
               {mentorApp.userId?.image || mentorApp.userId?.avatar || mentorApp.userId?.profilePicture ? (
                 <img 
                   src={mentorApp.userId?.image || mentorApp.userId?.avatar || mentorApp.userId?.profilePicture} 
                   alt={mentorApp.userId?.name || 'Mentor'}
-                  className="w-16 h-16 rounded-2xl object-cover shadow-inner border border-white shrink-0"
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-xl object-cover shadow-sm border border-slate-100 shrink-0"
                 />
               ) : (
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-50 text-indigo-600 flex items-center justify-center font-black text-2xl shadow-inner border border-white shrink-0">
+                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-50 text-indigo-600 flex items-center justify-center font-black text-xl shadow-sm border border-slate-100 shrink-0">
                     {mentorApp.userId?.name?.[0] || 'M'}
                 </div>
               )}
-              <div className="flex flex-col mt-1">
-                <h3 className="text-lg font-black text-slate-800 group-hover:text-indigo-600 transition-colors">
-                  {mentorApp.userId?.name || 'Mentor'}
-                </h3>
-                <span className="text-sm font-bold text-slate-500">{mentorApp.domain || mentorApp.currentStatus || 'Industry Expert'}</span>
+              
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-base md:text-lg font-black text-slate-800 group-hover:text-indigo-600 transition-colors truncate">
+                      {mentorApp.userId?.name || 'Mentor'}
+                    </h3>
+                    <p className="text-xs md:text-sm font-bold text-slate-500 truncate">{mentorApp.domain || mentorApp.currentStatus || 'Industry Expert'}</p>
+                  </div>
+                  
+                  {/* Match Badge */}
+                  <div className="shrink-0 bg-emerald-50 px-2 py-1 rounded-lg border border-emerald-100 flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    <span className="text-[10px] md:text-xs font-black text-emerald-700">{pseudoMatch}%</span>
+                  </div>
+                </div>
                 
-                <div className="flex items-center gap-3 mt-2 text-xs font-semibold text-slate-400">
-                  <span className="flex items-center gap-1.5"><Briefcase className="w-3.5 h-3.5" /> {mentorApp.experienceYears || 2} Yrs</span>
-                  <span className="uppercase text-[9px] tracking-wider text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full">{mentorApp.targetRole}</span>
+                {/* Stats */}
+                <div className="flex items-center gap-2 md:gap-3 mt-2 text-xs font-semibold text-slate-400">
+                  <span className="flex items-center gap-1">
+                    <Briefcase className="w-3 h-3" /> 
+                    <span className="hidden sm:inline">{mentorApp.experienceYears || 2} Years</span>
+                    <span className="sm:hidden">{mentorApp.experienceYears || 2} Yrs</span>
+                  </span>
+                  <span className="uppercase text-[9px] tracking-wider text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                    {mentorApp.targetRole === 'promentor' ? 'PRO' : 'PRE'}
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-1.5 relative z-10">
-              {(mentorApp.skills || []).slice(0, 3).map((tag: string, idx: number) => (
-                <span key={`${mentorApp._id}-skill-${idx}`} className="px-2.5 py-1 bg-white text-slate-600 text-[11px] font-bold rounded-lg border border-slate-200 shadow-sm">
+            {/* Skills */}
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {(mentorApp.skills || []).slice(0, 4).map((tag: string, idx: number) => (
+                <span key={`${mentorApp._id}-skill-${idx}`} className="px-2 py-0.5 bg-slate-50 text-slate-600 text-[10px] font-bold rounded-md border border-slate-200">
                   {tag}
                 </span>
               ))}
+              {(mentorApp.skills?.length || 0) > 4 && (
+                <span className="px-2 py-0.5 bg-slate-100 text-slate-400 text-[10px] font-bold rounded-md">
+                  +{(mentorApp.skills?.length || 0) - 4}
+                </span>
+              )}
             </div>
 
-            <div className="mt-6 relative z-10">
-              <Link href={`/mentors/${mentorApp.userId?._id || mentorApp.userId}`} className="w-full py-3 bg-slate-900 text-white hover:bg-indigo-600 border-none font-bold text-sm rounded-xl transition-colors shadow-md flex justify-center items-center gap-2 group-hover:shadow-indigo-500/25">
-                View Profile & Book <ChevronRight className="w-4 h-4" />
+            {/* CTA Button */}
+            <div className="mt-4">
+              <Link 
+                href={`/mentors/${mentorApp.userId?._id || mentorApp.userId}`} 
+                className="w-full py-2.5 bg-slate-900 text-white hover:bg-indigo-600 font-bold text-xs md:text-sm rounded-xl transition-all shadow-sm hover:shadow-md flex justify-center items-center gap-1.5"
+              >
+                View Profile <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
-            
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-50/50 blur-3xl rounded-full z-0 pointer-events-none group-hover:bg-purple-50/50 transition-colors"></div>
           </div>
         )})}
       </div>

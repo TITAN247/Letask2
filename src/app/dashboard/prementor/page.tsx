@@ -260,10 +260,10 @@ export default async function PreMentorDashboard() {
                     ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8" suppressHydrationWarning>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
                     {/* LEFT COLUMN: Main Actions */}
-                    <div className="lg:col-span-8 space-y-8" suppressHydrationWarning>
+                    <div className="lg:col-span-8 space-y-8">
                         
                         {/* Inbox Block */}
                         <div className="bg-white rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/60 relative overflow-hidden group transition-all duration-300 hover:shadow-[0_8px_40px_rgb(0,0,0,0.08)]">
@@ -323,7 +323,7 @@ export default async function PreMentorDashboard() {
                                                     <h3 className="text-lg font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{(session.menteeId as any)?.name || 'Mentee'}</h3>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <span className="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-1 rounded-md">{session.subject || '1:1 Session'}</span>
-                                                        <span className="text-sm font-medium text-slate-500 flex items-center gap-1.5" suppressHydrationWarning>
+                                                        <span className="text-sm font-medium text-slate-500 flex items-center gap-1.5">
                                                             <Clock className="w-3.5 h-3.5" /> {session.date} {session.timeSlot && `@ ${session.timeSlot}`}
                                                         </span>
                                                     </div>
@@ -375,7 +375,7 @@ export default async function PreMentorDashboard() {
                                                     <h3 className="font-bold text-lg text-white">{(session as any).mentorName || 'Pro-Mentor'}</h3>
                                                     <div className="text-sm font-medium text-slate-300 mt-1 flex items-center gap-2">
                                                         <span className="uppercase text-amber-400 font-extrabold text-[10px] tracking-wider px-2 py-0.5 bg-amber-400/10 rounded-full">{session.status}</span>
-                                                        {session.date && <span suppressHydrationWarning>• {session.date} {session.timeSlot && `@ ${session.timeSlot}`}</span>}
+                                                        {session.date && <span>• {session.date} {session.timeSlot && `@ ${session.timeSlot}`}</span>}
                                                     </div>
                                                 </div>
                                             </div>
