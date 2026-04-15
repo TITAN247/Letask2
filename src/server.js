@@ -14,18 +14,19 @@ const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-    const httpServer = createServer((req, res) => {
+    const httpServer = createServer(async (req, res) => {
         try {
             const parsedUrl = parse(req.url, true);
             
-            // Health check endpoint for Render
+            // Health check endpoint for Render - MUST respond immediately
             if (parsedUrl.pathname === '/health') {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
                 res.end(JSON.stringify({ status: 'ok', timestamp: new Date().toISOString() }));
                 return;
             }
             
-            handle(req, res, parsedUrl);
+            await handle(req, res, parsedUrl);
         } catch (err) {
             console.error("Error occurred handling", req.url, err);
             res.statusCode = 500;
@@ -98,16 +99,15 @@ app.prepare().then(() => {
     });
 
     httpServer.once("error", (err) => {
-        console.error(err);
+        console.error("Server error:", err);
         process.exit(1);
     });
 
-    const PORT = process.env.PORT || 3000;
-    const HOST = process.env.HOST || '0.0.0.0';
-
-    httpServer.listen(PORT, HOST, () => {
-        console.log(`> Ready on http://${HOST}:${PORT} (Custom Server + Socket.io)`);
-        console.log(`> Local: http://localhost:${PORT}`);
-        console.log(`> Network: http://${HOST}:${PORT}`);
+    httpServer.listen(port, hostname, () => {
+        console.log(`> Ready on http://${hostname}:${port} (Custom Server + Socket.io)`);
+        console.log(`> Health check: http://${hostname}:${port}/health`);
     });
+}).catch(err => {
+    console.error("Failed to start server:", err);
+    process.exit(1);
 });
