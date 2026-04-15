@@ -351,7 +351,7 @@ export default function ApplyProMentorPage() {
                         {step < 7 && <ChevronRight className="w-6 h-6" />}
                     </button>
                 </div>
-
             </main>
         </div>
+    );
 }
