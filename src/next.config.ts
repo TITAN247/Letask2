@@ -9,10 +9,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // Disable Turbopack to fix custom server compatibility
-  webpack: (config) => {
-    return config;
-  },
+  // Use turbopack explicitly
+  turbopack: {},
 };
 
 export default nextConfig;
