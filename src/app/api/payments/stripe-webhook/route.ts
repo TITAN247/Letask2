@@ -124,9 +124,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Disable body parsing for webhooks
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+// Disable body parsing for webhooks - use export const dynamic for App Router
+export const dynamic = 'force-dynamic';
+export const bodyParser = false;
