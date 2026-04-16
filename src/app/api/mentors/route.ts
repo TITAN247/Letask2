@@ -11,14 +11,31 @@ export async function GET() {
         // Ensure User model is loaded
         await User.findOne().exec().catch(() => {});
 
-        // Get both Pro-Mentors and Pre-Mentors
-        const proMentors = await MentorProfile.find()
+        // Get both Pro-Mentors and Pre-Mentors (only valid ones, no dummy/test data)
+        const proMentorsRaw = await MentorProfile.find({ userId: { $exists: true, $ne: null } })
             .populate('userId', 'name email role image')
             .lean();
             
-        const preMentors = await PreMentorApplication.find({ status: 'approved' })
+        const preMentorsRaw = await PreMentorApplication.find({ 
+            status: 'approved',
+            userId: { $exists: true, $ne: null }
+        })
             .populate('userId', 'name email role image')
             .lean();
+        
+        // Filter out dummy/test mentors
+        const isValidMentor = (mentor: any) => {
+            const name = mentor.userId?.name || '';
+            const email = mentor.userId?.email || '';
+            if (!name || name.length < 2) return false;
+            const lowerName = name.toLowerCase();
+            const lowerEmail = email.toLowerCase();
+            const testKeywords = ['test', 'dummy', 'sample', 'example', 'fake', 'demo', 'admin'];
+            return !testKeywords.some(kw => lowerName.includes(kw) || lowerEmail.includes(kw));
+        };
+        
+        const proMentors = proMentorsRaw.filter(isValidMentor);
+        const preMentors = preMentorsRaw.filter(isValidMentor);
 
         // Combine and format mentors
         const allMentors = [

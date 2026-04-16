@@ -1,8 +1,8 @@
 import dbConnect from "@/lib/db";
 import Session from "@/models/Session";
 import User from "@/models/User";
-import MentorProfile from "@/models/MentorProfile";
 import PreMentorApplication from "@/models/PreMentorApplication";
+import MentorProfile from "@/models/MentorProfile";
 import { getUserFromSession } from "@/lib/auth";
 import { ArrowRight, Calendar, Clock, MessageSquare, Search, Video, Sparkles, Award, UserCircle, Headset, ArrowUpCircle, Star, Users, Filter, Grid3X3, List } from "lucide-react";
 import MentorDashboardClient from "./MentorDashboardClient";
@@ -50,12 +50,16 @@ export default async function PreMentorDashboard() {
     // We check for both Application ID and raw User ID to be ultra-robust
     const mentorDocIdStr = mentorDocId.toString();
     
+    // Convert IDs to proper MongoDB ObjectIds for consistent comparison
+    const mentorDocIdObj = new mongoose.Types.ObjectId(mentorDocIdStr);
+    const userIdObj = new mongoose.Types.ObjectId(userIdStr);
+    
     const sessionQuery = {
         $or: [
-            { mentorId: mentorDocId },
-            { mentorId: userId },
-            { mentorId: mentorDocIdStr },  // Also check as string
-            { mentorId: userIdStr }        // Also check as string
+            { mentorId: mentorDocIdObj },     // As ObjectId (most common)
+            { mentorId: userIdObj },           // As ObjectId
+            { mentorId: mentorDocIdStr },       // As string
+            { mentorId: userIdStr }            // As string
         ],
         mentorType: 'prementor'  // Only get pre-mentor sessions
     };
@@ -63,20 +67,42 @@ export default async function PreMentorDashboard() {
     console.log("=== Session Query Debug ===");
     console.log("Query:", JSON.stringify(sessionQuery));
     console.log("mentorDocId (PreMentorApplication ID):", mentorDocIdStr);
+    console.log("mentorDocIdObj:", mentorDocIdObj.toString());
     console.log("userId (User ID):", userIdStr);
+    console.log("userIdObj:", userIdObj.toString());
 
-    const sessions = await Session.find(sessionQuery)
+    let sessions = await Session.find(sessionQuery)
         .populate("menteeId", "name email avatar profilePicture")
         .sort({ createdAt: -1 })
         .lean();
     
     console.log(`Sessions found for pre-mentor: ${sessions.length}`);
     
+    // If no sessions found, try querying without mentorType filter and filter in-memory
+    if (sessions.length === 0) {
+        console.log("[PreMentor Dashboard] No sessions with strict query, trying flexible query...");
+        const allSessions = await Session.find({
+            $or: [
+                { mentorId: mentorDocIdObj },
+                { mentorId: userIdObj },
+                { mentorId: mentorDocIdStr },
+                { mentorId: userIdStr }
+            ]
+        }).populate("menteeId", "name email avatar profilePicture").lean();
+        
+        // Filter for prementor type in memory (in case mentorType field is missing or different)
+        sessions = allSessions.filter((s: any) => 
+            s.mentorType === 'prementor' || !s.mentorType
+        );
+        
+        console.log(`[PreMentor Dashboard] Found ${allSessions.length} total sessions, ${sessions.length} prementor sessions after filtering`);
+    }
+    
     // Also check all sessions with mentorType prementor for debugging
     const allPreMentorSessions = await Session.find({ mentorType: 'prementor' }).lean();
     console.log(`All pre-mentor sessions in DB: ${allPreMentorSessions.length}`);
     allPreMentorSessions.forEach((s, i) => {
-        console.log(`Session ${i}: mentorId=${s.mentorId?.toString()}, mentorType=${s.mentorType}, status=${s.status}`);
+        console.log(`Session ${i}: mentorId=${s.mentorId?.toString()}, type=${typeof s.mentorId}, mentorType=${s.mentorType}, status=${s.status}`);
     });
 
     // As a Mentee (Booking Pro-Mentors)

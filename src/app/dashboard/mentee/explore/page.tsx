@@ -43,18 +43,50 @@ export default async function ExploreMentorsPage({ searchParams }: ExplorePagePr
   console.log("Query:", query);
   console.log("Filter:", filter);
   
-  const proMentors = await MentorProfile.find(filter)
-    .populate('userId', 'name avatar profilePicture image')
+  // Base filter to exclude dummy/test data - only show mentors with valid names
+  const validMentorFilter = {
+    ...filter,
+    $and: [
+      { userId: { $exists: true, $ne: null } }, // Must have a linked user
+    ]
+  };
+  
+  const proMentorsRaw = await MentorProfile.find(validMentorFilter)
+    .populate('userId', 'name avatar profilePicture image email')
     .sort({ rating: -1, createdAt: -1 })
     .lean();
     
-  const preMentors = await PreMentorApplication.find({ 
+  const preMentorsRaw = await PreMentorApplication.find({ 
     status: { $in: ['approved', 'pending'] }, 
-    ...filter 
+    ...validMentorFilter 
   })
-    .populate('userId', 'name avatar profilePicture image')
-    .sort({ createdAt: -1 })
-    .lean();
+  .populate('userId', 'name avatar profilePicture image email')
+  .sort({ createdAt: -1 })
+  .lean();
+  
+  // Filter out dummy/test mentors - must have a valid name with at least 2 characters
+  // and not contain test/dummy/sample keywords
+  const isValidMentor = (mentor: any) => {
+    const name = mentor.userId?.name || '';
+    const email = mentor.userId?.email || '';
+    
+    // Must have a name with at least 2 characters
+    if (!name || name.length < 2) return false;
+    
+    // Exclude test/dummy/sample data
+    const lowerName = name.toLowerCase();
+    const lowerEmail = email.toLowerCase();
+    const testKeywords = ['test', 'dummy', 'sample', 'example', 'fake', 'demo', 'admin'];
+    
+    if (testKeywords.some(kw => lowerName.includes(kw) || lowerEmail.includes(kw))) {
+      return false;
+    }
+    
+    return true;
+  };
+  
+  const proMentors = proMentorsRaw.filter(isValidMentor);
+  const preMentors = preMentorsRaw.filter(isValidMentor);
     
   console.log("Pro-Mentors found:", proMentors.length);
   console.log("Pre-Mentors found:", preMentors.length);

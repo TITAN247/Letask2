@@ -130,10 +130,24 @@ export default function ProMentorOnboarding() {
         if (status === "loading") return;
 
         const storedUser = localStorage.getItem("user");
-        if (session?.user) {
-            setUser(session.user);
-        } else if (storedUser) {
-            setUser(JSON.parse(storedUser));
+        const userData = session?.user || (storedUser ? JSON.parse(storedUser) : null);
+        
+        if (userData) {
+            setUser(userData);
+            
+            // Check if user already has a MentorProfile (already approved promentor)
+            const userId = userData._id || userData.id;
+            if (userId) {
+                fetch(`/api/auth/onboarding/check?userId=${userId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.hasOnboarding) {
+                            console.log('[ProMentor Onboarding] User already has profile, redirecting to dashboard');
+                            router.push('/dashboard/promentor');
+                        }
+                    })
+                    .catch(err => console.error('[ProMentor Onboarding] Error checking onboarding:', err));
+            }
         } else {
             router.push("/login/promentor");
         }
