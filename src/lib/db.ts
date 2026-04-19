@@ -28,17 +28,18 @@ async function dbConnect() {
         const opts = {
             bufferCommands: false,
             dbName: 'letask',
-            // Atlas optimized timeouts
-            serverSelectionTimeoutMS: 30000, // 30 seconds for Atlas
-            socketTimeoutMS: 45000, // 45 seconds
-            connectTimeoutMS: 30000, // 30 seconds
-            maxPoolSize: 10,
-            minPoolSize: 5, // Keep minimum connections for faster responses
+            // Increased timeouts for slow networks
+            serverSelectionTimeoutMS: 60000, // 60 seconds - doubled for reliability
+            socketTimeoutMS: 90000, // 90 seconds
+            connectTimeoutMS: 60000, // 60 seconds - doubled
+            maxPoolSize: 5, // Reduced to prevent connection exhaustion
+            minPoolSize: 1, // Reduced minimum
             retryWrites: true,
             retryReads: true,
-            // Atlas specific settings for reliability
-            maxIdleTimeMS: 30000,
-            heartbeatFrequencyMS: 10000,
+            // Connection reliability settings
+            maxIdleTimeMS: 60000,
+            heartbeatFrequencyMS: 30000, // Increased heartbeat interval
+            family: 4, // Use IPv4 (sometimes IPv6 causes issues)
         };
 
         cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
@@ -46,12 +47,13 @@ async function dbConnect() {
             console.log('📊 Database: letask');
             return mongoose;
         }).catch((error) => {
-            console.error('❌ MongoDB Atlas connection error:', error);
+            console.error('❌ MongoDB Atlas connection error:', error.message);
             console.error('🔧 Troubleshooting:');
             console.error('   1. Check MONGODB_URI in .env.local');
-            console.error('   2. Whitelist your IP in Atlas Network Access');
+            console.error('   2. Whitelist your IP in Atlas Network Access (0.0.0.0/0 for all IPs)');
             console.error('   3. Ensure cluster is running (not paused)');
             console.error('   4. Verify database user credentials');
+            console.error('   5. Check your internet connection');
             cached.promise = null;
             throw error;
         });
@@ -65,6 +67,33 @@ async function dbConnect() {
     }
 
     return cached.conn;
+}
+
+// Export a more resilient connection function with retry
+export async function dbConnectWithRetry(maxRetries = 3) {
+    let lastError;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            const conn = await dbConnect();
+            if (attempt > 1) {
+                console.log(`✅ MongoDB connected on attempt ${attempt}`);
+            }
+            return conn;
+        } catch (error) {
+            lastError = error;
+            console.warn(`⚠️ MongoDB connection attempt ${attempt} failed:`, (error as Error).message);
+            
+            if (attempt < maxRetries) {
+                const delay = Math.min(1000 * attempt, 5000); // Exponential backoff: 1s, 2s, 3s...
+                console.log(`⏳ Retrying in ${delay}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+    
+    console.error(`❌ Failed to connect to MongoDB after ${maxRetries} attempts`);
+    throw lastError;
 }
 
 // Export connection health check

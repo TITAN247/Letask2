@@ -4,7 +4,7 @@ import User from "@/models/User";
 import MentorProfile from "@/models/MentorProfile";
 import Review from "@/models/Review";
 import { getUserFromSession } from "@/lib/auth";
-import { DollarSign, Rocket, Calendar, TrendingUp, CheckCircle, MessageSquare, Star, Copy, Clock, Settings, Headset, User as UserIcon } from "lucide-react";
+import { Rocket, Calendar, TrendingUp, CheckCircle, MessageSquare, Star, Copy, Clock, Settings, Headset, User as UserIcon, Wallet } from "lucide-react";
 import MentorDashboardClient from "../prementor/MentorDashboardClient";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -116,9 +116,33 @@ export default async function ProMentorDashboard() {
 
     // Real pricing from mentor profile, 0 if not set
     const flatRate = (mentorProfile as any)?.pricing || 0;
-    // Use actual totalEarnings from profile, fallback to calculation
-    const totalEarnings = (mentorProfile as any)?.totalEarnings || (pastSessions.length * flatRate);
-    const pendingEarnings = paidSessions.length * flatRate; // Only count paid sessions
+    
+    // Check if pricing seems incorrect (less than 100)
+    const pricingWarning = flatRate > 0 && flatRate < 100;
+    
+    // Calculate earnings from actual session amounts (stored in session.amount)
+    // This is more accurate than using flatRate
+    const totalEarningsFromSessions = pastSessions.reduce((sum, s) => sum + ((s as any).amount || flatRate), 0);
+    const upcomingEarningsFromSessions = paidSessions.reduce((sum, s) => sum + ((s as any).amount || flatRate), 0);
+    
+    // Use actual totalEarnings from profile if available, otherwise calculate from sessions
+    const totalEarnings = (mentorProfile as any)?.totalEarnings || totalEarningsFromSessions || (pastSessions.length * flatRate);
+    
+    // Available balance = upcoming paid sessions only (not completed ones)
+    // Completed sessions earnings go to Gross Revenue
+    const pendingEarnings = upcomingEarningsFromSessions || (paidSessions.length * flatRate);
+    
+    console.log(`[ProMentor Dashboard] Earnings calc:`, {
+        flatRate,
+        pricingWarning,
+        pastSessionsCount: pastSessions.length,
+        upcomingSessionsCount: upcomingSessions.length,
+        paidSessionsCount: paidSessions.length,
+        totalEarnings,
+        pendingEarnings,
+        totalEarningsFromSessions,
+        upcomingEarningsFromSessions
+    });
 
     const displayName = (currentUser as any)?.name || 'Mentor';
     const rating = (mentorProfile as any)?.rating;
@@ -194,11 +218,14 @@ export default async function ProMentorDashboard() {
                             <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-2">
                                 <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" /> Gross Revenue
                             </div>
-                            <div className="text-2xl sm:text-4xl font-black text-slate-900" suppressHydrationWarning>${totalEarnings.toLocaleString('en-US')}</div>
+                            <div className="text-2xl sm:text-4xl font-black text-slate-900" suppressHydrationWarning>₹{totalEarnings.toLocaleString('en-IN')}</div>
                         </div>
                         <div className="mt-4 sm:mt-6 text-xs sm:text-sm font-medium text-slate-400">
                             {pastSessions.length} completed session{pastSessions.length !== 1 ? 's' : ''}
-                            {flatRate > 0 && <span> · ${flatRate}/session</span>}
+                            {flatRate > 0 && <span> · ₹{flatRate}/session</span>}
+                            {pricingWarning && (
+                                <span className="block text-amber-600 mt-1">⚠️ Update your pricing in Profile Settings</span>
+                            )}
                         </div>
                     </div>
 
@@ -223,12 +250,22 @@ export default async function ProMentorDashboard() {
                         <div className="absolute -top-10 -right-10 w-32 h-32 sm:w-40 sm:h-40 bg-white/10 rounded-full blur-2xl pointer-events-none transition-all group-hover:bg-white/20"></div>
                         <div>
                             <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-indigo-200 mb-2 flex items-center gap-2">
-                                <DollarSign className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-indigo-300" /> Escrow Balance
+                                <span className="text-lg font-bold">₹</span> Available Balance
                             </div>
-                            <div className="text-2xl sm:text-4xl font-black text-white" suppressHydrationWarning>${pendingEarnings.toLocaleString('en-US')}</div>
+                            <div className="text-2xl sm:text-4xl font-black text-white" suppressHydrationWarning>₹{pendingEarnings.toLocaleString('en-IN')}</div>
                         </div>
-                        <div className="mt-4 sm:mt-6 text-xs sm:text-sm text-indigo-200 font-medium">
-                            {flatRate > 0 ? `${upcomingSessions.length} confirmed · $${flatRate} each` : 'Set your pricing in Profile settings'}
+                        <div className="mt-4 sm:mt-6 space-y-2">
+                            <div className="text-xs sm:text-sm text-indigo-200 font-medium">
+                                {flatRate > 0 ? `${upcomingSessions.length} confirmed · ₹${flatRate} each` : 'Set your pricing in Profile settings'}
+                            </div>
+                            {/* Withdraw Button */}
+                            <Link 
+                                href="/dashboard/promentor/withdraw"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-bold rounded-xl transition-all border border-white/20"
+                            >
+                                <Wallet className="w-4 h-4" />
+                                Withdraw Earnings
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -253,7 +290,7 @@ export default async function ProMentorDashboard() {
                                     Pending Contracts
                                 </h2>
                                 {pendingRequests.length > 0 && flatRate > 0 && (
-                                    <span className="bg-amber-100 text-amber-700 font-bold px-3 py-1 rounded-lg text-sm shadow-sm border border-amber-200">${flatRate} / Session</span>
+                                    <span className="bg-amber-100 text-amber-700 font-bold px-3 py-1 rounded-lg text-sm shadow-sm border border-amber-200">₹{flatRate} / Session</span>
                                 )}
                             </div>
                             
@@ -346,7 +383,7 @@ export default async function ProMentorDashboard() {
                                         
                                         {flatRate > 0 && (
                                             <div className="text-right">
-                                                <div className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md inline-block border border-emerald-100">+${flatRate}</div>
+                                                <div className="text-sm font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md inline-block border border-emerald-100">+₹{flatRate}</div>
                                             </div>
                                         )}
                                         {flatRate === 0 && (

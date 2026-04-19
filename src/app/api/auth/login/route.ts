@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import dbConnect from "@/lib/db";
+import { dbConnectWithRetry } from "@/lib/db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 import { signToken } from "@/lib/auth";
@@ -15,7 +15,8 @@ export async function POST(req: Request) {
             );
         }
 
-        await dbConnect();
+        // Use retry connection for better reliability
+        await dbConnectWithRetry(3);
 
         const user = await User.findOne({ email });
         if (!user) {
@@ -62,10 +63,22 @@ export async function POST(req: Request) {
         );
         response.cookies.set('auth_token', token, { httpOnly: true, path: '/', maxAge: 60 * 60 * 24 * 7 });
         return response;
-    } catch (error) {
+    } catch (error: any) {
         console.error("Login error:", error);
+        
+        // Check for database connection errors
+        if (error.message?.includes('timeout') || 
+            error.message?.includes('Socket') || 
+            error.message?.includes('MongoServerSelectionError') ||
+            error.message?.includes('connect')) {
+            return NextResponse.json(
+                { message: "Database connection failed. Please check your internet connection and try again." },
+                { status: 503 }
+            );
+        }
+        
         return NextResponse.json(
-            { message: "An error occurred during login." },
+            { message: "An error occurred during login. Please try again." },
             { status: 500 }
         );
     }

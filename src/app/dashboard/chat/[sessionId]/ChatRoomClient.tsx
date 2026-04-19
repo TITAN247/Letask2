@@ -889,14 +889,23 @@ export default function ChatRoomClient() {
                         <p className="text-slate-500 mb-6">Your feedback has been submitted successfully.</p>
                         <button
                             onClick={() => {
-                                // Redirect based on user role
-                                const userRole = localStorage.getItem('userRole') || '';
+                                // Redirect based on user role - try multiple fallbacks
+                                const userRole = localStorage.getItem('userRole') || (session?.user as any)?.role || '';
+                                console.log('[Chat] Navigating to dashboard, role:', userRole);
+                                
+                                let destination = "/dashboard/mentee/bookings";
                                 if (userRole === 'prementor') {
-                                    router.push("/dashboard/prementor");
+                                    destination = "/dashboard/prementor";
                                 } else if (userRole === 'promentor') {
-                                    router.push("/dashboard/promentor");
-                                } else {
-                                    router.push("/dashboard/mentee/bookings");
+                                    destination = "/dashboard/promentor";
+                                }
+                                
+                                // Try router first, fallback to window.location
+                                try {
+                                    router.push(destination);
+                                } catch (e) {
+                                    console.log('[Chat] Router push failed, using window.location');
+                                    window.location.href = destination;
                                 }
                             }}
                             className="w-full py-3 rounded-xl font-bold bg-indigo-600 text-white hover:bg-indigo-700 transition"
@@ -951,14 +960,23 @@ export default function ChatRoomClient() {
                             </button>
                             <button
                                 onClick={() => {
-                                    // Redirect based on user role
-                                    const userRole = localStorage.getItem('userRole') || '';
+                                    // Redirect based on user role - try multiple fallbacks
+                                    const userRole = localStorage.getItem('userRole') || (session?.user as any)?.role || '';
+                                    console.log('[Chat] Skip navigation, role:', userRole);
+                                    
+                                    let destination = "/dashboard/mentee/bookings";
                                     if (userRole === 'prementor') {
-                                        router.push("/dashboard/prementor");
+                                        destination = "/dashboard/prementor";
                                     } else if (userRole === 'promentor') {
-                                        router.push("/dashboard/promentor");
-                                    } else {
-                                        router.push("/dashboard/mentee/bookings");
+                                        destination = "/dashboard/promentor";
+                                    }
+                                    
+                                    // Try router first, fallback to window.location
+                                    try {
+                                        router.push(destination);
+                                    } catch (e) {
+                                        console.log('[Chat] Router push failed, using window.location');
+                                        window.location.href = destination;
                                     }
                                 }}
                                 className="w-full py-3 rounded-xl font-bold bg-slate-200 text-slate-700 hover:bg-slate-300 transition"

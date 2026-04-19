@@ -11,6 +11,22 @@ function VerifyOtpContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const email = searchParams.get("email") || "";
+  const role = searchParams.get("role") || "mentee"; // Get role from URL, default to mentee
+  
+  // Determine login path based on role
+  const getLoginPath = (userRole: string) => {
+    switch(userRole) {
+      case 'prementor':
+        return '/login/prementor';
+      case 'promentor':
+        return '/login/promentor';
+      case 'mentee':
+      default:
+        return '/login/mentee';
+    }
+  };
+  
+  const loginPath = getLoginPath(role);
   
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -71,9 +87,9 @@ function VerifyOtpContent() {
       if (response.ok) {
         setStatus("success");
         setMessage(data.message || "Email verified successfully!");
-        // Redirect to login after 2 seconds
+        // Redirect to correct login page based on role after 2 seconds
         setTimeout(() => {
-          router.push("/login/mentee");
+          router.push(loginPath);
         }, 2000);
       } else {
         setStatus("error");
@@ -185,7 +201,7 @@ function VerifyOtpContent() {
               </button>
 
               <Link
-                href="/login/mentee"
+                href={loginPath}
                 className="text-gray-500 hover:text-gray-700 text-sm flex items-center justify-center gap-1"
               >
                 <ArrowLeft className="w-4 h-4" />

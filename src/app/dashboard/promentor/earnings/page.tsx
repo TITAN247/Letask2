@@ -3,7 +3,6 @@ import Session from "@/models/Session";
 import { getUserFromSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { 
-    DollarSign, 
     TrendingUp, 
     Wallet, 
     ArrowUpRight, 
@@ -28,23 +27,50 @@ export default async function ProMentorEarnings() {
     const mentorProfileId = (profile as any)?._id;
 
     // For promentors, mentorId in Session is the MentorProfile._id, not User ID
-    // Fetch completed sessions for total earnings
+    // Fetch completed sessions for total earnings - use actual session amounts
     const completedSessions = mentorProfileId 
         ? await Session.find({ mentorId: mentorProfileId, status: 'completed' }).lean()
         : [];
-    const totalEarnings = completedSessions.length * flatRate;
+    // Calculate from actual session amounts
+    const totalEarnings = completedSessions.reduce((sum, s) => sum + ((s as any).amount || flatRate), 0);
 
-    // Fetch upcoming sessions for pending earnings
+    // Fetch upcoming sessions for pending earnings - use actual session amounts
     const upcomingSessions = mentorProfileId
-        ? await Session.find({ mentorId: mentorProfileId, status: 'accepted' }).lean()
+        ? await Session.find({ mentorId: mentorProfileId, status: { $in: ['accepted', 'chat_active', 'paid'] } }).lean()
         : [];
-    const pendingEarnings = upcomingSessions.length * flatRate;
+    // Calculate from actual session amounts for paid/upcoming sessions
+    const pendingEarnings = upcomingSessions.reduce((sum, s) => {
+        // Only count sessions that are paid or have paymentStatus completed
+        if ((s as any).paymentStatus === 'completed' || (s as any).paymentStatus === 'paid') {
+            return sum + ((s as any).amount || flatRate);
+        }
+        return sum;
+    }, 0);
 
-    // Mock payout data
-    const payouts = [
-        { id: "P-1234", date: "Oct 24, 2026", amount: totalEarnings > 0 ? totalEarnings : 450, status: 'Processing' },
-        { id: "P-1122", date: "Sep 24, 2026", amount: 1250, status: 'Paid' },
-        { id: "P-0988", date: "Aug 24, 2026", amount: 875, status: 'Paid' },
+    // Fetch real payout data from API if available
+    let realPayouts: any[] = [];
+    try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/payments/earnings`, {
+            headers: { 'Cookie': `auth_token=${(sessionUser as any).token || ''}` },
+        });
+        if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.data?.completedPayouts) {
+                realPayouts = data.data.completedPayouts.map((p: any) => ({
+                    id: p.id?.toString().slice(-8) || 'P-XXXX',
+                    date: new Date(p.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    amount: Math.round(p.amount / 100), // Convert from paise
+                    status: p.status === 'paid' ? 'Paid' : 'Processing'
+                }));
+            }
+        }
+    } catch (e) {
+        console.log('[Earnings] Could not fetch real payouts:', e);
+    }
+
+    // Use real payouts if available, otherwise fallback to mock
+    const payouts = realPayouts.length > 0 ? realPayouts : [
+        { id: "P-1234", date: new Date().toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }), amount: pendingEarnings > 0 ? pendingEarnings : 0, status: pendingEarnings > 0 ? 'Processing' : 'Pending' },
     ];
 
     return (
@@ -57,9 +83,12 @@ export default async function ProMentorEarnings() {
                     <p className="text-slate-500 mt-1 font-medium">Manage your revenue, payouts, and financial performance.</p>
                 </div>
                 <div className="flex items-center gap-3 bg-white p-2 rounded-2xl border border-slate-100 shadow-sm">
-                    <button className="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all text-sm">
-                        Request Payout
-                    </button>
+                    <a 
+                    href="/dashboard/promentor/withdraw"
+                    className="px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition-all text-sm inline-block text-center"
+                >
+                    Request Payout
+                </a>
                     <button className="p-2.5 text-slate-400 hover:text-slate-600 transition-colors">
                         <CreditCard className="w-5 h-5" />
                     </button>
@@ -73,11 +102,11 @@ export default async function ProMentorEarnings() {
                         <Wallet className="w-24 h-24 text-indigo-600" />
                     </div>
                     <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6">
-                        <DollarSign className="w-6 h-6 text-indigo-600" />
+                        <span className="text-2xl font-bold text-indigo-600">₹</span>
                     </div>
                     <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Total Revenue</div>
                     <div className="text-4xl font-black text-slate-900 leading-none">
-                        ${totalEarnings.toLocaleString()}
+                        ₹{totalEarnings.toLocaleString('en-IN')}
                     </div>
                     <div className="mt-4 flex items-center gap-1.5 text-emerald-600 font-bold text-xs bg-emerald-50 w-fit px-2 py-1 rounded-lg">
                         <ArrowUpRight className="w-3 h-3" /> +12% this month
@@ -93,7 +122,7 @@ export default async function ProMentorEarnings() {
                     </div>
                     <div className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Pending Income</div>
                     <div className="text-4xl font-black text-slate-900 leading-none">
-                        ${pendingEarnings.toLocaleString()}
+                        ₹{pendingEarnings.toLocaleString('en-IN')}
                     </div>
                     <p className="mt-4 text-xs text-slate-400 font-medium">To be settled after session completion.</p>
                 </div>
@@ -136,7 +165,7 @@ export default async function ProMentorEarnings() {
                                     <tr key={p.id} className="hover:bg-slate-50/50 transition-colors group">
                                         <td className="px-8 py-5 text-sm font-bold text-slate-700">{p.id}</td>
                                         <td className="px-8 py-5 text-sm font-medium text-slate-500">{p.date}</td>
-                                        <td className="px-8 py-5 text-sm font-black text-slate-900">${p.amount.toLocaleString()}</td>
+                                        <td className="px-8 py-5 text-sm font-black text-slate-900">₹{p.amount.toLocaleString('en-IN')}</td>
                                         <td className="px-8 py-5">
                                             <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
                                                 p.status === 'Paid' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'
@@ -174,7 +203,7 @@ export default async function ProMentorEarnings() {
                             </div>
                             <div className="flex justify-between text-sm">
                                 <span className="font-bold text-slate-400">Minimum Payout</span>
-                                <span className="font-black text-slate-900">$50.00</span>
+                                <span className="font-black text-slate-900">₹500</span>
                             </div>
                             <div className="pt-4 border-t border-slate-50">
                                 <button className="w-full py-4 text-sm font-black text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all">

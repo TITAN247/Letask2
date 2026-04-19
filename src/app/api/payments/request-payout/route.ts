@@ -3,22 +3,26 @@ import dbConnect from "@/lib/db";
 import Payout from "@/models/Payout";
 import User from "@/models/User";
 import Payment from "@/models/Payment";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/authOptions";
+import MentorProfile from "@/models/MentorProfile";
+import { getUserFromSession } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
     
-    const session = await getServerSession(authOptions);
-    if (!session?.user) {
+    // Use custom JWT auth instead of NextAuth
+    const userSession = await getUserFromSession();
+    if (!userSession) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: "Unauthorized - Please login" },
         { status: 401 }
       );
     }
 
-    const userId = (session.user as any).id;
+    // Get mentor profile to find correct mentorId
+    const userId = (userSession as any).id;
+    const mentorProfile = await MentorProfile.findOne({ userId }).lean();
+    const mentorId = mentorProfile ? (mentorProfile as any)._id.toString() : userId;
 
     const body = await request.json();
     const { amount, currency = "INR", bankDetails } = body;
@@ -39,29 +43,37 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate available balance
+    // Calculate available balance using correct mentorId
+    const mongoose = await import("mongoose");
+    const mentorIdObj = new mongoose.Types.ObjectId(mentorId);
+    
+    console.log(`[Payout API] Calculating balance for mentorId: ${mentorId}`);
+    
     const totalEarnedAgg = await Payment.aggregate([
-      { $match: { mentorId: new (await import("mongoose")).Types.ObjectId(userId), status: "completed" } },
+      { $match: { mentorId: mentorIdObj, status: "completed" } },
       { $group: { _id: null, total: { $sum: "$mentorEarning" } } },
     ]);
     const totalEarned = totalEarnedAgg.length > 0 ? totalEarnedAgg[0].total : 0;
+    console.log(`[Payout API] Total earned: ${totalEarned}`);
 
     const pendingPayoutAgg = await Payout.aggregate([
-      { $match: { mentorId: new (await import("mongoose")).Types.ObjectId(userId), status: "pending" } },
+      { $match: { mentorId: mentorIdObj, status: "pending" } },
       { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
     const pendingPayout = pendingPayoutAgg.length > 0 ? pendingPayoutAgg[0].total : 0;
+    console.log(`[Payout API] Pending payouts: ${pendingPayout}`);
 
     const availableBalance = totalEarned - pendingPayout;
+    console.log(`[Payout API] Available balance: ${availableBalance}`);
 
     if (amount > availableBalance) {
       return NextResponse.json(
-        { success: false, message: "Insufficient balance" },
+        { success: false, message: `Insufficient balance. Available: ₹${availableBalance/100}` },
         { status: 400 }
       );
     }
 
-    // Create payout request
+    // Create payout request with userId (not mentorId)
     const payout = await Payout.create({
       mentorId: userId,
       amount,

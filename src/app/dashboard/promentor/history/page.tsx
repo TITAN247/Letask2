@@ -2,7 +2,7 @@ import dbConnect from "@/lib/db";
 import Session from "@/models/Session";
 import { getUserFromSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { DollarSign, History, Star, Download } from "lucide-react";
+import { History, Star, Download, Wallet } from "lucide-react";
 import MentorProfile from "@/models/MentorProfile";
 
 export default async function ProMentorHistory() {
@@ -24,6 +24,9 @@ export default async function ProMentorHistory() {
         : [];
 
     const flatRate = profile?.pricing || 125;
+    
+    // Calculate total from actual session amounts
+    const totalEarnings = pastSessions.reduce((sum, s) => sum + ((s as any).amount || flatRate), 0);
 
     return (
         <div className="p-8 max-w-6xl mx-auto">
@@ -44,7 +47,7 @@ export default async function ProMentorHistory() {
             <div className="bg-white rounded-[2rem] border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
                 {pastSessions.length === 0 ? (
                     <div className="py-20 flex flex-col items-center justify-center text-center px-4">
-                        <DollarSign className="w-16 h-16 text-slate-200 mb-6" />
+                        <Wallet className="w-16 h-16 text-slate-200 mb-6" />
                         <h3 className="text-xl font-bold text-slate-800">No completed transactions</h3>
                         <p className="text-slate-500 text-sm mt-2 max-w-sm">When you successfully complete a paid session, the verified transaction will appear here.</p>
                     </div>
@@ -76,12 +79,12 @@ export default async function ProMentorHistory() {
                                         {(session.menteeId as any)?.name || 'Unknown Client'}
                                     </th>
                                     <td className="px-8 py-5 font-medium" suppressHydrationWarning>
-                                        {session.date || new Date((session as any).createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                                        {session.date || new Date((session as any).createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
                                     </td>
                                     <td className="px-8 py-5 text-slate-500">{session.subject || 'Mentorship Session'}</td>
                                     <td className="px-8 py-5 text-right flex justify-end">
                                         <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1 rounded-md font-bold text-sm">
-                                            +${flatRate}
+                                            +₹{(session as any).amount || flatRate}
                                         </div>
                                     </td>
                                 </tr>

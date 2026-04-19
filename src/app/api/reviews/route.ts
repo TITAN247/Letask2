@@ -14,8 +14,9 @@ export async function POST(request: NextRequest) {
     
     const userSession = await getUserFromSession();
     if (!userSession) {
+      console.error("[Review API] No user session found");
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: "Unauthorized - Please login" },
         { status: 401 }
       );
     }
@@ -29,6 +30,9 @@ export async function POST(request: NextRequest) {
       tags,
     } = body;
 
+    console.log(`[Review API] Received review request for session: ${sessionId}`);
+    console.log(`[Review API] User: ${userSession.id}, Role: ${userSession.role}`);
+
     if (!sessionId || !overallRating || !categories) {
       return NextResponse.json(
         { success: false, message: "Missing required fields" },
@@ -39,11 +43,14 @@ export async function POST(request: NextRequest) {
     // Get session details
     const sessionDetails = await Session.findById(sessionId).lean();
     if (!sessionDetails) {
+      console.error(`[Review API] Session not found: ${sessionId}`);
       return NextResponse.json(
         { success: false, message: "Session not found" },
         { status: 404 }
       );
     }
+
+    console.log(`[Review API] Session found. Status: ${sessionDetails.status}, Mentee: ${sessionDetails.menteeId}, Mentor: ${sessionDetails.mentorId}`);
 
     // Check if session is completed
     if (sessionDetails.status !== "completed") {
@@ -62,12 +69,16 @@ export async function POST(request: NextRequest) {
 
     // Check if reviewer is the mentee (includes mentees and prementors booking promentors)
     const sessionMenteeId = sessionDetails.menteeId?.toString();
+    const sessionMentorId = sessionDetails.mentorId?.toString();
+    
+    console.log(`[Review API] Comparing - Reviewer: ${reviewerId}, Session Mentee: ${sessionMenteeId}, Session Mentor: ${sessionMentorId}`);
     
     if (reviewerId === sessionMenteeId) {
       // Mentee reviewing mentor (works for both regular mentees and prementors as mentees)
       revieweeId = sessionDetails.mentorId;
       revieweeRole = sessionDetails.mentorType === "promentor" ? "pro-mentor" : "pre-mentor";
-    } else if (reviewerId === sessionDetails.mentorId?.toString()) {
+      console.log(`[Review API] Mentee reviewing mentor. Reviewee: ${revieweeId}, Role: ${revieweeRole}`);
+    } else if (reviewerId === sessionMentorId) {
       // Mentor trying to review - not allowed
       return NextResponse.json(
         { success: false, message: "Mentors cannot review their own sessions" },
@@ -81,8 +92,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if already reviewed
-    const existingReview = await Review.findOne({ sessionId, reviewerId });
+    const existingReview = await Review.findOne({ sessionId, reviewerId }).lean();
     if (existingReview) {
+      console.log(`[Review API] Review already exists for session ${sessionId} by user ${reviewerId}`);
       return NextResponse.json(
         { success: false, message: "You have already reviewed this session" },
         { status: 400 }
@@ -98,6 +110,17 @@ export async function POST(request: NextRequest) {
       finalReviewerRole = "pro-mentor";
     }
     
+    console.log(`[Review API] Creating review:`, {
+      reviewerId,
+      reviewerRole: finalReviewerRole,
+      revieweeId,
+      revieweeRole,
+      sessionId,
+      overallRating,
+      categories,
+      writtenFeedback: writtenFeedback || "",
+    });
+    
     const review = await Review.create({
       reviewerId,
       reviewerRole: finalReviewerRole,
@@ -106,9 +129,11 @@ export async function POST(request: NextRequest) {
       sessionId,
       overallRating,
       categories,
-      writtenFeedback,
-      tags,
+      writtenFeedback: writtenFeedback || "",
+      tags: tags || [],
     });
+    
+    console.log(`[Review API] Review created successfully: ${review._id}`);
 
     // Update session rated status
     await Session.findByIdAndUpdate(sessionId, {
@@ -203,7 +228,7 @@ export async function POST(request: NextRequest) {
       message: "Review submitted successfully",
     });
   } catch (error: any) {
-    console.error("Submit review error:", error);
+    console.error("[Review API] Submit review error:", error);
     return NextResponse.json(
       { success: false, message: "Failed to submit review", error: error.message },
       { status: 500 }

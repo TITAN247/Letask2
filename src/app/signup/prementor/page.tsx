@@ -39,7 +39,7 @@ export default function PreMentorSignupPage() {
 
             if (res.ok) {
                 if (data.needsEmailVerification) {
-                    router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+                    router.push(`/verify-otp?email=${encodeURIComponent(data.email)}&role=prementor`);
                 } else {
                     alert(data.message || "Account created! Please login.");
                     router.push("/login/prementor");

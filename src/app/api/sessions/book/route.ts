@@ -58,8 +58,16 @@ export async function POST(req: Request) {
         // Get mentee details
         const mentee = await User.findById((userSession as any).id);
         
-        // Get mentor rate (default to 500 INR if not set)
-        const amount = mentor.hourlyRateINR || 500;
+        // Get mentor rate - use pricing for ProMentor, expectedPricing for PreMentor
+        let amount = 500; // Default fallback
+        if (mentorType === 'promentor') {
+            amount = mentor.pricing || mentor.expectedPricing || 500;
+        } else {
+            // Pre-mentors might have expectedPricing or be free
+            amount = mentor.expectedPricing || mentor.hourlyRateINR || 0;
+        }
+        
+        console.log(`[Book Session] Mentor rate determined: ₹${amount} for ${mentorType}`);
 
         console.log(`[Book Session] Creating session with:`, {
             menteeId: (userSession as any).id,
